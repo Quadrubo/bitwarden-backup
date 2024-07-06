@@ -2,5 +2,7 @@ backup/*
 !backup/.gitkeep
 
 .env
+.env.dev
+.env.docker
 
 __pycache__/

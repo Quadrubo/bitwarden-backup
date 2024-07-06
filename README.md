@@ -24,7 +24,7 @@ There is also a `shell.nix` file available if you are on nixos.
 Create the `.env` file.
 
 ```shell
-cp .env.dev .env
+cp .env.dev.example .env
 ```
 
 Fill out the environment variables.
@@ -51,7 +51,7 @@ Follow these steps, if you want to test the docker image locally.
 Create the `.env` file.
 
 ```shell
-cp .env.docker .env
+cp .env.docker.example .env
 ```
 
 Fill out the environment variables.
