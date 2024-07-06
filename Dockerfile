@@ -1,40 +1,46 @@
-FROM python:3.12-bookworm
+FROM python:3.12-slim-bookworm AS builder
 ARG S6_OVERLAY_VERSION=3.2.0.0
+
+RUN apt-get update && \
+    apt-get install -y xz-utils unzip curl
+
+# Download the bitwarden-cli
+WORKDIR /tmp
+
+RUN curl -L "https://github.com/bitwarden/clients/releases/download/cli-v2024.6.0/bw-linux-2024.6.0.zip" -o bw.zip \
+    && unzip bw.zip
+
+# Download s6-overlay
+ADD https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-noarch.tar.xz /tmp
+ADD https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-x86_64.tar.xz /tmp
+
+FROM python:3.12-slim-bookworm
 
 # Install the necessary packages
 # cron: to run the cron job
-# xz-utils: to extract the s6-overlay
 # gettext: to use envsubst
 RUN apt-get update && \
-    apt-get install -y cron xz-utils gettext
-
-# ___APP___
+    apt-get install -y cron gettext xz-utils
 
 # Install bitwarden-cli
-WORKDIR /usr/local/bin
+COPY --from=builder /tmp/bw /usr/local/bin/bw
+RUN chmod +x /usr/local/bin/bw
 
-RUN curl -L "https://github.com/bitwarden/clients/releases/download/cli-v2024.6.0/bw-linux-2024.6.0.zip" -o bw.zip \
-    && unzip bw.zip \
-    && chmod +x bw
+# Install s6-overlay
+COPY --from=builder /tmp/s6-overlay-noarch.tar.xz /tmp/s6-overlay-x86_64.tar.xz /tmp
+RUN tar -C / -Jxpf /tmp/s6-overlay-noarch.tar.xz
+RUN tar -C / -Jxpf /tmp/s6-overlay-x86_64.tar.xz
 
 WORKDIR /app
 
 COPY requirements.txt ./
 
-RUN pip3 install -r requirements.txt
+RUN pip3 install --no-cache-dir -r requirements.txt
 
 COPY src .
 
-# ___APP___
 # Copy the cron job template file
 COPY docker/crontab.template /app/crontab.template
-
-# Install s6-overlay
-ADD https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-noarch.tar.xz /tmp
-RUN tar -C / -Jxpf /tmp/s6-overlay-noarch.tar.xz
-
-ADD https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-x86_64.tar.xz /tmp
-RUN tar -C / -Jxpf /tmp/s6-overlay-x86_64.tar.xz
 
 # Copy the s6-overlay files
 COPY docker/etc/s6-overlay /etc/s6-overlay
