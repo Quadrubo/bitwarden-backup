@@ -16,6 +16,8 @@ services:
       # Backups
       - BACKUP_FORMAT=${BACKUP_FORMAT:-encrypted_json}
       - BACKUP_PASSWORD=${BACKUP_PASSWORD}
+      # Cron
+      - CRON_SCHEDULE=${CRON_SCHEDULE:-0 1 * * *}
     volumes:
       - ./backup:/backup
       - ./config:/config
