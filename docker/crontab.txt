@@ -1,0 +1,6 @@
+# >/proc/1/fd/1 redirects STDOUT from the command to PID1's STDOUT
+# 2>/proc/1/fd/2 redirects STDERR from the command to PID1's STDERR
+
+* * * * * root /usr/local/bin/python /app/main.py > /proc/1/fd/1 2>/proc/1/fd/2
+
+# An empty line is required at the end of this file for a valid cron file.

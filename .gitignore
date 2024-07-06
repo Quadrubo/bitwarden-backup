@@ -1,0 +1,6 @@
+backup/*
+!backup/.gitkeep
+
+.env
+
+__pycache__/
