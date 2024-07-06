@@ -10,7 +10,6 @@ BW_BINARY = os.getenv("BW_BINARY")
 
 print(BW_BINARY)
 
-CONFIG_PATH = os.getenv("CONFIG_PATH")
 BACKUP_PATH = os.getenv("BACKUP_PATH")
 
 CLIENT_ID = os.getenv("BW_CLIENT_ID")

@@ -6,7 +6,6 @@ services:
       dockerfile: Dockerfile
     environment:
       # Paths
-      - CONFIG_PATH=${CONFIG_PATH:-/config/config.yml}
       - BACKUP_PATH=${BACKUP_PATH:-/backup}
       - BW_BINARY=/usr/local/bin/bw
       # Authentication
