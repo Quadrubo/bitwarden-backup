@@ -12,6 +12,8 @@ services:
       - BW_CLIENT_ID=${BW_CLIENT_ID}
       - BW_CLIENT_SECRET=${BW_CLIENT_SECRET}
       - BW_MASTER_PASSWORD=${BW_MASTER_PASSWORD}
+      # Connection
+      - BW_SERVER=${BW_SERVER:-https://vault.bitwarden.com}
       # Backups
       - BACKUP_FORMAT=${BACKUP_FORMAT:-encrypted_json}
       - BACKUP_PASSWORD=${BACKUP_PASSWORD}

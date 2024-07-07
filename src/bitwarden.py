@@ -16,10 +16,19 @@ class Bitwarden:
         else:
             raise Exception("Session key not set. Please login & unlock first.")
 
+    def configure_server(self, server_url):
+        if (self.status() != 'unauthenticated'):
+            print("Already authenticated. Please logout first.")
+            return
+
+        process = subprocess.run([self.binary_path, 'config', 'server', server_url])
+
     def status(self):
         process = subprocess.run([self.binary_path, 'status'], capture_output=True)
 
         output = process.stdout.decode('utf-8')
+        error_output = process.stderr.decode('utf-8')
+
         output_json = json.loads(output)
         status = output_json['status']
         
@@ -54,6 +63,11 @@ class Bitwarden:
         process = subprocess.run([self.binary_path, 'unlock', '--passwordenv', 'BW_PASSWORD'], env=my_env, capture_output=True)
 
         output = process.stdout.decode('utf-8')
+        error_output = process.stderr.decode('utf-8')
+
+        if "Invalid master password." in error_output:
+            raise Exception("Invalid master password.")
+
         session_key = re.search(r'(?<=BW_SESSION=").*?(?=")', output).group(0)
         
         self.session_key = session_key

@@ -18,6 +18,7 @@ Environment variables:
 | BW_BINARY          | /usr/local/bin/bw                         | The path to the Bitwarden CLI binary. Shouldn't need to change.                                                                                              |
 | BW_CLIENT_ID       | user.abcdefgh-1234-abcd-1234-abcdefghijkl | Your Bitwarden client id. Retrieve from [https://vault.bitwarden.com](https://vault.bitwarden.com).                                                          |
 | BW_CLIENT_SECRET   | abcdefghijklmnopqrstuvwxyzabcd            | Your Bitwarden client secret. Retrieve from [https://vault.bitwarden.com](https://vault.bitwarden.com).                                                      |
+| BW_SERVER          | https://vault.bitwarden.com               | The bitwarden server to use. Replace with your selfhosted server or use the EU server [https://vault.bitwarden.eu](https://vault.bitwarden.eu).              |
 | BW_MASTER_PASSWORD | your-extremely-secure-master-password     | Your Bitwarden master password.                                                                                                                              |
 | CRON_SCHEDULE      | 0 1 \* \* \*                              | The cron schedule on which to run the backup. Use [https://crontab.guru/](https://crontab.guru/) for help generating one.                                    |
 | TZ                 | Europe/Berlin                             | Your timezone. Needed for the cron job to work correctly. Here is a [List of valid timezones](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones). |
@@ -35,6 +36,8 @@ services:
       - BW_CLIENT_ID=your-client-id
       - BW_CLIENT_SECRET=your-client-secret
       - BW_MASTER_PASSWORD=your-master-password
+      # Connection
+      - BW_SERVER=https://vault.bitwarden.com
       # Backups
       - BACKUP_FORMAT=encrypted_json
       - BACKUP_PASSWORD=your-backup-encryption-password
