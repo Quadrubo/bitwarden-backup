@@ -26,7 +26,7 @@ Environment variables:
 ```yml
 services:
   bitwarden-backup:
-    image: ghcr.io/quadrubo/bitwarden-backup:v0.0.1-alpha
+    image: ghcr.io/quadrubo/bitwarden-backup:v0.1.0
     container_name: bitwarden-backup
     environment:
       # Paths
