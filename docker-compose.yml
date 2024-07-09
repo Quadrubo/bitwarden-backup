@@ -20,5 +20,10 @@ services:
       - BACKUP_ORGANIZATIONS=${BACKUP_ORGANIZATIONS}
       # Cron
       - CRON_SCHEDULE=${CRON_SCHEDULE:-0 1 * * *}
+      # NTFY
+      - NTFY_SERVER=${NTFY_SERVER:https://ntfy.sh}
+      - NTFY_TOPIC=${NTFY_TOPIC}
+      - NTFY_USERNAME=${NTFY_USERNAME}
+      - NTFY_PASSWORD=${NTFY_PASSWORD}
     volumes:
       - ./backup:/backup

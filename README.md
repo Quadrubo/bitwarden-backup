@@ -24,6 +24,10 @@ Environment variables:
 | BACKUP_PASSWORD      | your-backup-encryption-password           | The password to encrypt the backup with. Only works if you use `encrypted_json` as your `BACKUP_FORMAT`. If no password is chosen your account encryption key will be used. |
 | BACKUP_ORGANIZATIONS | organization_id_1,organization_id_2       | A comma delimted list of organization ids. These will also be backed up.                                                                                                    |
 | CRON_SCHEDULE        | 0 1 \* \* \*                              | The cron schedule on which to run the backup. Use [https://crontab.guru/](https://crontab.guru/) for help generating one.                                                   |
+| NTFY_SERVER          | https://ntfy.sh                           | The ntfy server to use.                                                                                                                                                     |
+| NTFY_TOPIC           | your-ntfy-topic                           | The ntfy topic to use.                                                                                                                                                      |
+| NTFY_USERNAME        | your-ntfy-username                        | The ntfy username used to authenticate. Can be left empty if your topic is unprotected.                                                                                     |
+| NTFY_PASSWORD        | your-ntfy-password                        | The ntfy password used to authenticate. Can be left empty if your topic is unprotected.                                                                                     |
 | TZ                   | Europe/Berlin                             | Your timezone. Needed for the cron job to work correctly. Here is a [List of valid timezones](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones).                |
 
 ```yml
@@ -47,6 +51,11 @@ services:
       - BACKUP_ORGANIZATIONS=abcdefgh-1234-abcd-1234-abcdefghijkl,12345667-abcd-1234-abcd-123456789012
       # Cron
       - CRON_SCHEDULE=0 1 * * *
+      # NTFY
+      - NTFY_SERVER=https://ntfy.sh
+      - NTFY_TOPIC=your-ntfy-topic
+      - NTFY_USERNAME=your-ntfy-username
+      - NTFY_PASSWORD=your-ntfy-password
       # Time
       - TZ=Europe/Berlin
     volumes:
@@ -85,6 +94,10 @@ BW_MASTER_PASSWORD="your-extremely-secure-master-password"
 
 BACKUP_PASSWORD=password
 BACKUP_ORGANIZATIONS=abcdefgh-1234-abcd-1234-abcdefghijkl,12345667-abcd-1234-abcd-123456789012
+
+NTFY_TOPIC=your-ntfy-topic
+NTFY_USERNAME=your-ntfy-username
+NTFY_PASSWORD=your-ntfy-password
 ```
 
 Execute the program.
@@ -113,6 +126,10 @@ BW_MASTER_PASSWORD="your-extremely-secure-master-password"
 
 BACKUP_PASSWORD=password
 BACKUP_ORGANIZATIONS=abcdefgh-1234-abcd-1234-abcdefghijkl,12345667-abcd-1234-abcd-123456789012
+
+NTFY_TOPIC=your-ntfy-topic
+NTFY_USERNAME=your-ntfy-username
+NTFY_PASSWORD=your-ntfy-password
 ```
 
 Start the container.
