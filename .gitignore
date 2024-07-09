@@ -6,3 +6,5 @@ backup/*
 .env.docker
 
 __pycache__/
+
+.idea/
