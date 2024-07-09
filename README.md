@@ -12,16 +12,19 @@ Make sure to use an up to date image tag.
 
 Environment variables:
 
-| Variable           | Example                                   | Description                                                                                                                                                  |
-| ------------------ | ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| BACKUP_PATH        | /backup                                   | The path to store backups in **inside** the container. Shouldn't change, instead change the volume mapping to access your backups.                           |
-| BW_BINARY          | /usr/local/bin/bw                         | The path to the Bitwarden CLI binary. Shouldn't need to change.                                                                                              |
-| BW_CLIENT_ID       | user.abcdefgh-1234-abcd-1234-abcdefghijkl | Your Bitwarden client id. Retrieve from [https://vault.bitwarden.com](https://vault.bitwarden.com).                                                          |
-| BW_CLIENT_SECRET   | abcdefghijklmnopqrstuvwxyzabcd            | Your Bitwarden client secret. Retrieve from [https://vault.bitwarden.com](https://vault.bitwarden.com).                                                      |
-| BW_SERVER          | https://vault.bitwarden.com               | The bitwarden server to use. Replace with your selfhosted server or use the EU server [https://vault.bitwarden.eu](https://vault.bitwarden.eu).              |
-| BW_MASTER_PASSWORD | your-extremely-secure-master-password     | Your Bitwarden master password.                                                                                                                              |
-| CRON_SCHEDULE      | 0 1 \* \* \*                              | The cron schedule on which to run the backup. Use [https://crontab.guru/](https://crontab.guru/) for help generating one.                                    |
-| TZ                 | Europe/Berlin                             | Your timezone. Needed for the cron job to work correctly. Here is a [List of valid timezones](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones). |
+| Variable             | Example                                   | Description                                                                                                                                                                 |
+| -------------------- | ----------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| BACKUP_PATH          | /backup                                   | The path to store backups in **inside** the container. Shouldn't change, instead change the volume mapping to access your backups.                                          |
+| BW_BINARY            | /usr/local/bin/bw                         | The path to the Bitwarden CLI binary. Shouldn't need to change.                                                                                                             |
+| BW_CLIENT_ID         | user.abcdefgh-1234-abcd-1234-abcdefghijkl | Your Bitwarden client id. Retrieve from [https://vault.bitwarden.com](https://vault.bitwarden.com).                                                                         |
+| BW_CLIENT_SECRET     | abcdefghijklmnopqrstuvwxyzabcd            | Your Bitwarden client secret. Retrieve from [https://vault.bitwarden.com](https://vault.bitwarden.com).                                                                     |
+| BW_MASTER_PASSWORD   | your-extremely-secure-master-password     | Your Bitwarden master password.                                                                                                                                             |
+| BW_SERVER            | https://vault.bitwarden.com               | The bitwarden server to use. Replace with your selfhosted server or use the EU server [https://vault.bitwarden.eu](https://vault.bitwarden.eu).                             |
+| BACKUP_FORMAT        | encrypted_json                            | The format of the backup. See the [Export command](https://bitwarden.com/help/cli/#export) for more details.                                                                |
+| BACKUP_PASSWORD      | your-backup-encryption-password           | The password to encrypt the backup with. Only works if you use `encrypted_json` as your `BACKUP_FORMAT`. If no password is chosen your account encryption key will be used. |
+| BACKUP_ORGANIZATIONS | organization_id_1,organization_id_2       | A comma delimted list of organization ids. These will also be backed up.                                                                                                    |
+| CRON_SCHEDULE        | 0 1 \* \* \*                              | The cron schedule on which to run the backup. Use [https://crontab.guru/](https://crontab.guru/) for help generating one.                                                   |
+| TZ                   | Europe/Berlin                             | Your timezone. Needed for the cron job to work correctly. Here is a [List of valid timezones](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones).                |
 
 ```yml
 services:
@@ -41,6 +44,7 @@ services:
       # Backups
       - BACKUP_FORMAT=encrypted_json
       - BACKUP_PASSWORD=your-backup-encryption-password
+      - BACKUP_ORGANIZATIONS=abcdefgh-1234-abcd-1234-abcdefghijkl,12345667-abcd-1234-abcd-123456789012
       # Cron
       - CRON_SCHEDULE=0 1 * * *
       # Time
@@ -80,6 +84,7 @@ BW_CLIENT_SECRET="abcdefghijklmnopqrstuvwxyzabcd"
 BW_MASTER_PASSWORD="your-extremely-secure-master-password"
 
 BACKUP_PASSWORD=password
+BACKUP_ORGANIZATIONS=abcdefgh-1234-abcd-1234-abcdefghijkl,12345667-abcd-1234-abcd-123456789012
 ```
 
 Execute the program.
@@ -107,6 +112,7 @@ BW_CLIENT_SECRET="abcdefghijklmnopqrstuvwxyzabcd"
 BW_MASTER_PASSWORD="your-extremely-secure-master-password"
 
 BACKUP_PASSWORD=password
+BACKUP_ORGANIZATIONS=abcdefgh-1234-abcd-1234-abcdefghijkl,12345667-abcd-1234-abcd-123456789012
 ```
 
 Start the container.

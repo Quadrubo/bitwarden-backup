@@ -29,9 +29,29 @@ bitwarden.configure_server(SERVER)
 bitwarden.login(CLIENT_ID, CLIENT_SECRET)
 bitwarden.unlock(MASTER_PASSWORD)
 
+def generate_output_path(path, current_time, organization_id = None):
+    output_path = BACKUP_PATH + "/bitwarden-encrypted_" + current_time
+
+    if organization_id:
+        output_path += "_" + organization_id
+
+    output_path += ".json"
+
+    return output_path
+
 current_time = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
 output = BACKUP_PATH + "/bitwarden-encrypted-" + current_time + ".json"
 
-bitwarden.export(output, BACKUP_FORMAT, BACKUP_PASSWORD)
+bitwarden.export(generate_output_path(BACKUP_PATH, current_time), BACKUP_FORMAT, BACKUP_PASSWORD)
+
+BACKUP_ORGANIZATIONS = os.getenv("BACKUP_ORGANIZATIONS").strip()
+
+if (BACKUP_ORGANIZATIONS):
+  BACKUP_ORGANIZATIONS = BACKUP_ORGANIZATIONS.split(",")
+else:
+  BACKUP_ORGANIZATIONS = []
+
+for organization_id in BACKUP_ORGANIZATIONS:
+    bitwarden.export(generate_output_path(BACKUP_PATH, current_time, organization_id), BACKUP_FORMAT, BACKUP_PASSWORD, organization_id)    
 
 bitwarden.logout()
