@@ -72,10 +72,13 @@ class Bitwarden:
         
         self.session_key = session_key
 
-    def export(self, output, cfg_format, password, organization_id = None):
+    def export(self, output, cfg_format, password = None, organization_id = None):
         my_env = self.get_session_environment()
 
-        export_command = [self.binary_path, 'export', '--output', output, '--format', cfg_format, '--password', password]
+        export_command = [self.binary_path, 'export', '--output', output, '--format', cfg_format]
+
+        if password:
+            export_command += ['--password', password]
 
         if organization_id:
             export_command += ['--organizationid', organization_id]
