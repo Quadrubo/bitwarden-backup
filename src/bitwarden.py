@@ -2,85 +2,101 @@ import subprocess
 import os
 import json
 import re
+from cli import CLI
+
 
 class Bitwarden:
-    def __init__(self, binary_path):
-        self.binary_path = binary_path
+    def __init__(self, cli: CLI, server, client_id, client_secret, master_password):
+        self.cli = cli
+        self.server = server
+        self.client_id = client_id
+        self.client_secret = client_secret
+        self.master_password = master_password
         self.session_key = None
 
+    def get_client_environment(self):
+        if not self.client_id or not self.client_secret:
+            raise Exception("Client id or client secret not set.")
+
+        environment = os.environ.copy()
+        environment["BW_CLIENTID"] = self.client_id
+        environment["BW_CLIENTSECRET"] = self.client_secret
+
+        return environment
+
+    def get_password_environment(self):
+        if not self.master_password:
+            raise Exception("Master password not set.")
+
+        environment = os.environ.copy()
+        environment["BW_PASSWORD"] = self.master_password
+
+        return environment
+
     def get_session_environment(self):
-        if (self.session_key):
-            my_env = os.environ.copy()
-            my_env["BW_SESSION"] = self.session_key
-            return my_env
-        else:
+        if not self.session_key:
             raise Exception("Session key not set. Please login & unlock first.")
 
-    def configure_server(self, server_url):
-        if (self.status() != 'unauthenticated'):
-            print("Already authenticated. Please logout first.")
-            return
+        environment = os.environ.copy()
+        environment["BW_SESSION"] = self.session_key
 
-        process = subprocess.run([self.binary_path, 'config', 'server', server_url])
+        return environment
 
-    def status(self):
-        process = subprocess.run([self.binary_path, 'status'], capture_output=True)
-
-        output = process.stdout.decode('utf-8')
-        error_output = process.stderr.decode('utf-8')
-
-        output_json = json.loads(output)
-        status = output_json['status']
-        
-        return status
-
-    def login(self, client_id, client_secret):
+    def configure_server(self):
         if self.status() != 'unauthenticated':
             print("Already authenticated. Please logout first.")
             return
 
-        my_env = os.environ.copy()
-        my_env["BW_CLIENTID"] = client_id
-        my_env["BW_CLIENTSECRET"] = client_secret
+        self.cli.execute("config", ["server", self.server])
 
-        process = subprocess.run([self.binary_path, 'login', '--apikey'], env=my_env)
+    def status(self):
+        stdout, stderr = self.cli.execute('status')
+
+        status = json.loads(stdout)['status']
+
+        return status
+
+    def login(self):
+        if self.status() != 'unauthenticated':
+            print("Already authenticated. Please logout first.")
+            return
+
+        environment = self.get_client_environment()
+
+        self.cli.execute("login", ["--apikey"], environment)
 
     def logout(self):
         if self.status() == 'unauthenticated':
             print("Already unauthenticated. Please login first.")
             return
 
-        process = subprocess.run([self.binary_path, 'logout'])
+        self.cli.execute("logout")
 
-    def unlock(self, master_password):
+    def unlock(self):
         if self.status() == 'unlocked':
             print("Already unlocked. Please lock first.")
             return
 
-        my_env = os.environ.copy()
-        my_env["BW_PASSWORD"] = master_password
+        environment = self.get_password_environment()
 
-        process = subprocess.run([self.binary_path, 'unlock', '--passwordenv', 'BW_PASSWORD'], env=my_env, capture_output=True)
+        stdout, stderr = self.cli.execute("unlock", ["--passwordenv", "BW_PASSWORD"], environment)
 
-        output = process.stdout.decode('utf-8')
-        error_output = process.stderr.decode('utf-8')
-
-        if "Invalid master password." in error_output:
+        if "Invalid master password." in stderr:
             raise Exception("Invalid master password.")
 
-        session_key = re.search(r'(?<=BW_SESSION=").*?(?=")', output).group(0)
-        
+        session_key = re.search(r'(?<=BW_SESSION=").*?(?=")', stdout).group(0)
+
         self.session_key = session_key
 
-    def export(self, output, cfg_format, password = None, organization_id = None):
-        my_env = self.get_session_environment()
+    def export(self, output, cfg_format, password=None, organization_id=None):
+        environment = self.get_session_environment()
 
-        export_command = [self.binary_path, 'export', '--output', output, '--format', cfg_format]
+        arguments = ['--output', output, '--format', cfg_format]
 
         if password:
-            export_command += ['--password', password]
+            arguments += ['--password', password]
 
         if organization_id:
-            export_command += ['--organizationid', organization_id]
+            arguments += ['--organizationid', organization_id]
 
-        subprocess.run(export_command, env=my_env, check=True)
+        self.cli.execute("export", arguments, environment)
