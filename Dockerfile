@@ -7,7 +7,7 @@ RUN apt-get update && \
 # Download the bitwarden-cli
 WORKDIR /tmp
 
-RUN curl -L "https://github.com/bitwarden/clients/releases/download/cli-v2024.6.0/bw-linux-2024.6.0.zip" -o bw.zip \
+RUN curl -L "https://github.com/bitwarden/clients/releases/download/cli-v2025.1.3/bw-linux-2025.1.3.zip" -o bw.zip \
     && unzip bw.zip
 
 # Download s6-overlay
