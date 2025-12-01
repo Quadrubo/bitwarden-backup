@@ -18,7 +18,7 @@ class Backup:
         self.backup_format = os.getenv("BACKUP_FORMAT")
         self.backup_password = os.getenv("BACKUP_PASSWORD")
 
-        backup_organizations = os.getenv("BACKUP_ORGANIZATIONS").strip()
+        backup_organizations = os.getenv("BACKUP_ORGANIZATIONS", "").strip()
 
         if backup_organizations:
             self.backup_organizations = backup_organizations.split(",")
