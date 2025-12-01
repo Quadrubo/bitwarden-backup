@@ -18,7 +18,7 @@ class Backup:
         self.backup_format = os.getenv("BACKUP_FORMAT")
         self.backup_password = os.getenv("BACKUP_PASSWORD")
 
-        backup_organizations = os.getenv("BACKUP_ORGANIZATIONS").strip()
+        backup_organizations = os.getenv("BACKUP_ORGANIZATIONS", "").strip()
 
         if backup_organizations:
             self.backup_organizations = backup_organizations.split(",")
@@ -58,14 +58,15 @@ class Backup:
 
         export_files.append(self.generate_export_filename())
 
-        for organization_id in self.backup_organizations:
-            self.bitwarden.export(
-                self.generate_export_path(organization_id),
-                self.backup_format,
-                self.backup_password
-            )
+        if self.backup_organizations:
+            for organization_id in self.backup_organizations:
+                self.bitwarden.export(
+                    self.generate_export_path(organization_id),
+                    self.backup_format,
+                    self.backup_password
+                )
 
-            export_files.append(self.generate_export_filename(organization_id))
+                export_files.append(self.generate_export_filename(organization_id))
 
         self.bitwarden.logout()
 
