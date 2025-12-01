@@ -58,15 +58,14 @@ class Backup:
 
         export_files.append(self.generate_export_filename())
 
-        if self.backup_organizations:
-            for organization_id in self.backup_organizations:
-                self.bitwarden.export(
-                    self.generate_export_path(organization_id),
-                    self.backup_format,
-                    self.backup_password
-                )
+        for organization_id in self.backup_organizations:
+            self.bitwarden.export(
+                self.generate_export_path(organization_id),
+                self.backup_format,
+                self.backup_password
+            )
 
-                export_files.append(self.generate_export_filename(organization_id))
+            export_files.append(self.generate_export_filename(organization_id))
 
         self.bitwarden.logout()
 
